@@ -1,0 +1,64 @@
+---
+title: "PAIR Scholarly Reflection #3"
+subtitle: "How does understanding predictive uncertainty change what it means to trust an individual prediction?"
+author: "Parminder Singh"
+date: today
+format:
+  docx:
+    toc: false
+bibliography: Prediction_Uncertainity.bib
+csl: https://www.zotero.org/styles/apa
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+# Paper
+
+**Article:** *Unveil Sources of Uncertainty: Feature Contribution to Conformal Prediction Intervals*
+
+**Authors:** Marouane Il Idrissi, Agathe Fernandes Machado, Ewen Gallic, and Arthur Charpentier
+
+**Publication:** arXiv preprint, arXiv:2505.13118 [cs.AI], May 19, 2025
+
+**DOI/URL:** <https://arxiv.org/abs/2505.13118>
+
+# P — Position
+
+Predictive models are often evaluated by the accuracy of their point estimates, yet a point estimate alone does not show how confident the model is in a particular prediction. @idrissiUnveilSourcesUncertainty2025 examine this gap by asking not only what a model predicts, but also why the model is uncertain about that prediction. Most explainability methods identify the features that move a predicted value up or down. The authors argue that this is only part of the explanation: a model may produce a reasonable estimate while still having enough uncertainty that acting on it would be risky. They combine conformal prediction with Shapley-style feature attribution to explain the width and boundaries of prediction intervals [@idrissiUnveilSourcesUncertainty2025].
+
+I find this shift important because trust in an individual prediction should not come from the predicted number alone. If a model predicts a credit loss, fraud risk, or market outcome, the decision-maker also needs to know how wide the plausible range is and what factors are driving that range. The authors propose a model-agnostic method that attributes uncertainty to individual features using both standard Shapley values and proportional Shapley values. Their contribution to Predictive AI is to make uncertainty more visible and more interpretable at the case level. In my view, the paper makes a useful argument: a prediction becomes more trustworthy when we can see not only its estimated value, but also the uncertainty around it and the factors associated with that uncertainty.
+
+# A — Analyze
+
+Overall, I found the paper convincing as a methodological study. The authors do not rely on one type of evidence. They provide theoretical results, simulations with known data-generating structures, and tests on several real datasets. Their use of split conformal prediction is a strength because it gives a clear coverage target: under the exchangeability assumption, the prediction interval should contain the true outcome at the stated marginal rate. They also show that their Monte Carlo approximation for Shapley and proportional Shapley values is unbiased, strongly consistent, and asymptotically normal under the required conditions [@idrissiUnveilSourcesUncertainty2025].
+
+The simulations are well chosen for the paper's purpose. In one experiment, the authors build a dataset where some variables affect the average outcome while other variables affect uncertainty. This allows them to demonstrate that explaining prediction intervals is not the same as explaining a model's average prediction. They also show that the sampled-permutation approach moves toward exact Shapley values as more permutations are used, while reducing computation time. In the reported 16-feature example, 1,000 sampled permutations produced about a ten-fold runtime improvement over exact computation [@idrissiUnveilSourcesUncertainty2025].
+
+The real-data analysis is useful because it includes datasets with different sample sizes and numbers of features and compares linear regression, random forests, LightGBM, quantile regression, and quantile random forests. The results show that uncertainty-based feature rankings can differ from conventional SHAP rankings based on the conditional mean. However, the evidence mainly shows that the method works as intended; it does not show whether people make better decisions after receiving these uncertainty explanations. I would therefore describe the evidence as strong for the paper's technical contribution, but more limited for its practical claims about high-stakes decision-making [@idrissiUnveilSourcesUncertainty2025].
+
+# I — Interrogate
+
+The issue I would question most is whether the prediction intervals remain trustworthy when the environment changes. The conformal guarantee depends on exchangeability, meaning that the calibration data and the future cases should come from a sufficiently similar setting. That assumption can be difficult to defend in practice. In financial services, for example, market stress, changes in consumer behavior, policy changes, fraud adaptation, or new data-collection practices can make future cases different from the data used to calibrate the interval. If that happens, an interval that looked reliable in testing may no longer have the same coverage in deployment [@idrissiUnveilSourcesUncertainty2025].
+
+I would also be careful about how people interpret the feature attributions. A large uncertainty attribution means that a feature contributed strongly to the model's interval width or boundary. It does not prove that the feature is a real-world cause of uncertainty. The feature could be a proxy for an omitted variable, a result of correlated predictors, or a sign of data-quality problems. This matters in regulated settings because an apparently useful feature may also be sensitive, unfair, or difficult to justify.
+
+The paper itself shows that rankings can change across models and between standard and proportional Shapley allocations. I see this as an important practical warning. An explanation should not create automatic confidence simply because it produces a clear ranking. Before using such results in a consequential decision, I would want to see stability across models, time periods, subgroups, and reasonable modeling choices.
+
+# R — Reimagine
+
+I would extend the study by testing whether uncertainty attribution improves real decision-making in a financial-risk or compliance setting. For example, the next study could use time-ordered data from credit risk, transaction monitoring, fraud detection, liquidity risk, or compliance surveillance. It could compare three approaches: a model that produces only a point prediction, a model that provides a conformal prediction interval, and a model that provides both an interval and an explanation of the interval's main drivers.
+
+I would avoid relying only on a random train-calibration split. In a financial or regulatory setting, a rolling time-based design would be more realistic because it would test how the method performs when conditions change. The evaluation should include overall and subgroup coverage, interval width, decision loss, false-positive and false-negative costs, escalation rates for human review, and the stability of uncertainty attributions over time. I would also examine whether features that drive uncertainty reflect meaningful risk information, missing data, poor data quality, or possible proxies for protected characteristics.
+
+This extension would help answer the question that matters most to me: does explaining uncertainty actually improve the quality of action? In compliance and risk governance, a wide interval should sometimes lead to more evidence gathering, a human review, or a decision to wait rather than an automatic action. A useful system should help identify those cases.
+
+# Researcher Takeaway
+
+This paper taught me that a prediction should not be trusted simply because it is accurate on average or because its point estimate can be explained. Trust in an individual prediction requires attention to the uncertainty interval, the sources of that uncertainty, the similarity between the current case and the calibration data, and the consequences of making the wrong decision.
+
+# References
+
+::: {#refs}
+
